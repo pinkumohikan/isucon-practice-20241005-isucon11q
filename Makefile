@@ -5,7 +5,7 @@ gogo: stop-services truncate-logs start-services bench
 stop-services:
 	sudo systemctl stop nginx
 	sudo systemctl stop isucondition.php
-	sudo systemctl stop mysql
+	ssh isucon-s3 "sudo systemctl stop mysql"
 
 truncate-logs:
 	sudo journalctl --vacuum-size=1K
@@ -15,7 +15,7 @@ truncate-logs:
 	sudo truncate --size 0 /var/log/mysql/error.log
 
 start-services:
-	sudo systemctl start mysql
+	ssh isucon-s3 "sudo systemctl start mysql"
 	sudo systemctl start isucondition.php
 	sudo systemctl start nginx
 
