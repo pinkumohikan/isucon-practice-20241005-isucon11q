@@ -1579,7 +1579,7 @@ final class Handler
     public function postIsuCondition(Request $request, Response $response, array $args): Response
     {
         // TODO: 一定割合リクエストを落としてしのぐようにしたが、本来は全量さばけるようにすべき
-        $dropProbability = 0.9;
+        $dropProbability = 0.95;
 
         if ((rand() / getrandmax()) <= $dropProbability) {
             $this->logger->warning('drop post isu condition request');
