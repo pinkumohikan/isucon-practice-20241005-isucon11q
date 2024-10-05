@@ -1,6 +1,6 @@
 .PHONY: *
 
-gogo: stop-services truncate-logs start-services
+gogo: stop-services truncate-logs start-services bench
 
 stop-services:
 	sudo systemctl stop nginx
