@@ -11,7 +11,7 @@ truncate-logs:
 	sudo journalctl --vacuum-size=1K
 	sudo truncate --size 0 /var/log/nginx/access.log
 	sudo truncate --size 0 /var/log/nginx/error.log
-	sudo truncate --size 0 /tmp/slow.log
+	sudo truncate --size 0 /var/log/mysql/slow.log
 	sudo truncate --size 0 /var/log/mysql/error.log
 
 start-services:
