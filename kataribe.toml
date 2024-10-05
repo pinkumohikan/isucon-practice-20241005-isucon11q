@@ -104,8 +104,8 @@ regexp = 'GET /api/isu/([a-z0-9-]+)/icon'
 name = 'GET /api/isu([a-z0-9-]+)/icon'
 
 [[bundle]]
-regexp = 'GET /'
-name = 'GET /\?jwt=(.+)'
+regexp = 'GET /\?jwt=(.+)'
+name = 'GET /'
 
 #[[bundle]]
 #regexp = '^(GET|HEAD) /stylesheets/'
