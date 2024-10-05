@@ -1652,16 +1652,17 @@ final class Handler
                 $this->dbh->quote($cond->message)
             );
 
-            $sql = 'INSERT INTO `isu_condition` (`jia_isu_uuid`, `timestamp`, `is_sitting`, `condition`, `message`) VALUES ' . implode(', ', $values);
+        }
 
-            try {
-                $this->dbh->exec($sql);
-            } catch (PDOException $e) {
-                $this->dbh->rollBack();
-                $this->logger->error('db error: ' . $e->errorInfo[2]);
+        $sql = 'INSERT INTO `isu_condition` (`jia_isu_uuid`, `timestamp`, `is_sitting`, `condition`, `message`) VALUES ' . implode(', ', $values);
 
-                return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
-            }
+        try {
+            $this->dbh->exec($sql);
+        } catch (PDOException $e) {
+            $this->dbh->rollBack();
+            $this->logger->error('db error: ' . $e->errorInfo[2]);
+
+            return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
         }
 
         $this->dbh->commit();
