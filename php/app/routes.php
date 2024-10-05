@@ -24,8 +24,7 @@ final class Isu implements JsonSerializable
         public ?string $jiaUserId,
         public ?DateTimeInterface $createdAt,
         public ?DateTimeInterface $updatedAt,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array{id?: string, jia_isu_uuid?: string, name?: string, image?: string, character?: string, jia_user_id?: string, created_at?: string, updated_at?: string} $dbRow
@@ -63,8 +62,7 @@ final class IsuFromJia
 {
     public function __construct(
         public ?string $character,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws UnexpectedValueException
@@ -93,8 +91,7 @@ final class GetIsuListResponse implements JsonSerializable
         public string $name,
         public string $character,
         public ?GetIsuConditionResponse $latestIsuCondition,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{id: int, jia_isu_uuid: string, name: string, character: string, latest_isu_condition: ?GetIsuConditionResponse}
@@ -121,8 +118,7 @@ final class IsuCondition
         public ?string $condition,
         public ?string $message,
         public ?DateTimeInterface $createdAt,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array{id?: string, jia_isu_uuid?: string, timestamp?: string, is_sitting?: string, condition?: string, message?: string, created_at?: string} $dbRow
@@ -144,9 +140,7 @@ final class IsuCondition
 
 final class InitializeRequest
 {
-    public function __construct(public string $jiaServiceUrl)
-    {
-    }
+    public function __construct(public string $jiaServiceUrl) {}
 
     /**
      * @throws UnexpectedValueException
@@ -169,9 +163,7 @@ final class InitializeRequest
 
 final class InitializeResponse implements JsonSerializable
 {
-    public function __construct(public string $language)
-    {
-    }
+    public function __construct(public string $language) {}
 
     /**
      * @return array{language: string}
@@ -184,9 +176,7 @@ final class InitializeResponse implements JsonSerializable
 
 final class GetMeResponse implements JsonSerializable
 {
-    public function __construct(public string $jiaUserId)
-    {
-    }
+    public function __construct(public string $jiaUserId) {}
 
     /**
      * @return array{jia_user_id: string}
@@ -207,8 +197,7 @@ final class GraphResponse implements JsonSerializable
         public int $endAt,
         public ?GraphDataPoint $data,
         public array $conditionTimestamps,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{start_at: int, end_at: int, data: ?GraphDataPoint, condition_timestamps: array<int>}
@@ -229,8 +218,7 @@ final class GraphDataPoint implements JsonSerializable
     public function __construct(
         public int $score,
         public ConditionsPercentage $percentage,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{score: int, percentage: ConditionsPercentage}
@@ -251,8 +239,7 @@ final class ConditionsPercentage implements JsonSerializable
         public int $isBroken,
         public int $isDirty,
         public int $isOverweight,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{sitting: int, is_broken: int, is_dirty: int, is_overweight: int}
@@ -278,8 +265,7 @@ final class GraphDataPointWithInfo
         public DateTimeInterface $startAt,
         public GraphDataPoint $data,
         public array $conditionTimestamps,
-    ) {
-    }
+    ) {}
 }
 
 final class GetIsuConditionResponse implements JsonSerializable
@@ -292,8 +278,7 @@ final class GetIsuConditionResponse implements JsonSerializable
         public string $condition,
         public string $conditionLevel,
         public string $message,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{jia_isu_uuid: string, isu_name: string, timestamp: int, is_sitting: bool, condition: string, condition_level: string, message: string}
@@ -324,8 +309,7 @@ final class TrendResponse implements JsonSerializable
         public array $info,
         public array $warning,
         public array $critical,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{character: string, info: array<TrendCondition>, warning: array<TrendCondition>, critical: array<TrendCondition>}
@@ -346,8 +330,7 @@ final class TrendCondition implements JsonSerializable
     public function __construct(
         public int $id,
         public int $timestamp,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{isu_id: int, timestamp: int}
@@ -368,8 +351,7 @@ final class PostIsuConditionRequest
         public string $condition,
         public string $message,
         public int $timestamp,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<self>
@@ -412,8 +394,7 @@ final class JiaServiceRequest implements JsonSerializable
     public function __construct(
         public string $targetBaseUrl,
         public string $isuUuid,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{target_base_url: string, isu_uuid: string}
@@ -475,8 +456,7 @@ final class Handler
         private SessionHelper $session,
         private LoggerInterface $logger,
         private HttpClient $httpClient,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array{0: string, 1: int, 2: string}
@@ -838,7 +818,7 @@ final class Handler
 
         try {
             $stmt = $this->dbh->prepare('INSERT INTO `isu`' .
-                                        '	(`jia_isu_uuid`, `name`, `image`, `jia_user_id`) VALUES (?, ?, ?, ?)');
+                '	(`jia_isu_uuid`, `name`, `image`, `jia_user_id`) VALUES (?, ?, ?, ?)');
             $stmt->execute([$jiaIsuUuid, $isuName, $image, $jiaUserId]);
         } catch (PDOException $e) {
             $this->dbh->rollBack();
@@ -1005,7 +985,7 @@ final class Handler
             $response->getBody()->write('not found: isu');
 
             return $response->withStatus(StatusCodeInterface::STATUS_NOT_FOUND)
-                    ->withHeader('Content-Type', 'text/plain; charset=utf-8');
+                ->withHeader('Content-Type', 'text/plain; charset=utf-8');
         }
 
         $response->getBody()->write($rows[0]['image']);
@@ -1395,8 +1375,8 @@ final class Handler
             if ($startTime->getTimestamp() === 0) {
                 $stmt = $this->dbh->prepare(
                     'SELECT * FROM `isu_condition` WHERE `jia_isu_uuid` = ?' .
-                    '	AND `timestamp` < ?' .
-                    '	ORDER BY `timestamp` DESC'
+                        '	AND `timestamp` < ?' .
+                        '	ORDER BY `timestamp` DESC'
                 );
                 $stmt->execute([
                     $jiaIsuUuid,
@@ -1405,9 +1385,9 @@ final class Handler
             } else {
                 $stmt = $this->dbh->prepare(
                     'SELECT * FROM `isu_condition` WHERE `jia_isu_uuid` = ?' .
-                    '	AND `timestamp` < ?' .
-                    '	AND ? <= `timestamp`' .
-                    '	ORDER BY `timestamp` DESC'
+                        '	AND `timestamp` < ?' .
+                        '	AND ? <= `timestamp`' .
+                        '	ORDER BY `timestamp` DESC'
                 );
                 $stmt->execute([
                     $jiaIsuUuid,
@@ -1653,6 +1633,7 @@ final class Handler
                 ->withHeader('Content-Type', 'text/plain; charset=UTF-8');
         }
 
+        $values = [];
         foreach ($req as $cond) {
             if (!$this->isValidConditionFormat($cond->condition)) {
                 $this->dbh->rollBack();
@@ -1662,26 +1643,26 @@ final class Handler
                     ->withHeader('Content-Type', 'text/plain; charset=UTF-8');
             }
 
+            $values[] = sprintf(
+                '(%s, %s, %d, %s, %s)',
+                $this->dbh->quote($jiaIsuUuid),
+                $this->dbh->quote(date('Y-m-d H:i:s', $cond->timestamp)),
+                (int)$cond->isSitting,
+                $this->dbh->quote($cond->condition),
+                $this->dbh->quote($cond->message)
+            );
 
-            try {
-                $stmt = $this->dbh->prepare(
-                    'INSERT INTO `isu_condition`' .
-                    '	(`jia_isu_uuid`, `timestamp`, `is_sitting`, `condition`, `message`)' .
-                    '	VALUES (?, ?, ?, ?, ?)'
-                );
-                $stmt->execute([
-                    $jiaIsuUuid,
-                    date('Y-m-d H:i:s', $cond->timestamp),
-                    (int)$cond->isSitting,
-                    $cond->condition,
-                    $cond->message,
-                ]);
-            } catch (PDOException $e) {
-                $this->dbh->rollBack();
-                $this->logger->error('db error: ' . $e->errorInfo[2]);
+        }
 
-                return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
-            }
+        $sql = 'INSERT INTO `isu_condition` (`jia_isu_uuid`, `timestamp`, `is_sitting`, `condition`, `message`) VALUES ' . implode(', ', $values);
+
+        try {
+            $this->dbh->exec($sql);
+        } catch (PDOException $e) {
+            $this->dbh->rollBack();
+            $this->logger->error('db error: ' . $e->errorInfo[2]);
+
+            return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
         }
 
         $this->dbh->commit();
