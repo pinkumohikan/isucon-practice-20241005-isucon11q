@@ -1633,6 +1633,7 @@ final class Handler
                 ->withHeader('Content-Type', 'text/plain; charset=UTF-8');
         }
 
+        $values = [];
         foreach ($req as $cond) {
             if (!$this->isValidConditionFormat($cond->condition)) {
                 $this->dbh->rollBack();
@@ -1642,20 +1643,19 @@ final class Handler
                     ->withHeader('Content-Type', 'text/plain; charset=UTF-8');
             }
 
+            $values[] = sprintf(
+                '(%s, %s, %d, %s, %s)',
+                $this->dbh->quote($jiaIsuUuid),
+                $this->dbh->quote(date('Y-m-d H:i:s', $cond->timestamp)),
+                (int)$cond->isSitting,
+                $this->dbh->quote($cond->condition),
+                $this->dbh->quote($cond->message)
+            );
+
+            $sql = 'INSERT INTO `isu_condition` (`jia_isu_uuid`, `timestamp`, `is_sitting`, `condition`, `message`) VALUES ' . implode(', ', $values);
 
             try {
-                $stmt = $this->dbh->prepare(
-                    'INSERT INTO `isu_condition`' .
-                        '	(`jia_isu_uuid`, `timestamp`, `is_sitting`, `condition`, `message`)' .
-                        '	VALUES (?, ?, ?, ?, ?)'
-                );
-                $stmt->execute([
-                    $jiaIsuUuid,
-                    date('Y-m-d H:i:s', $cond->timestamp),
-                    (int)$cond->isSitting,
-                    $cond->condition,
-                    $cond->message,
-                ]);
+                $this->dbh->exec($sql);
             } catch (PDOException $e) {
                 $this->dbh->rollBack();
                 $this->logger->error('db error: ' . $e->errorInfo[2]);
