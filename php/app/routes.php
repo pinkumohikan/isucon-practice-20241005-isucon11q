@@ -1508,23 +1508,28 @@ final class Handler
             /** @var array<TrendCondition> $characterCriticalIsuConditions */
             $characterCriticalIsuConditions = [];
 
+            $isuUuids = array_map(fn($isu) => $isu->jiaIsuUuid, $isuList);
+            try {
+                $stmt = $this->dbh->prepare('SELECT * FROM `isu_condition` WHERE `jia_isu_uuid` IN (' . implode(',', array_fill(0, count($isuList), '?')) . ') ORDER BY timestamp DESC');
+                $stmt->execute($isuUuids);
+                $rows = $stmt->fetchAll();
+            } catch (PDOException $e) {
+                $this->logger->error('db error: ' . $e->errorInfo[2]);
+
+                return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
+            }
+            $conditionsMap = [];
+            foreach ($rows as $row) {
+                $condition = IsuCondition::fromDbRow($row);
+                if (empty($conditionsMap[$condition->jiaIsuUuid])) {
+                    $conditionsMap[$condition->jiaIsuUuid] = [$condition];
+                } else {
+                    $conditionsMap[$condition->jiaIsuUuid] []= $condition;
+                }
+            }
+
             foreach ($isuList as $isu) {
-                try {
-                    $stmt = $this->dbh->prepare('SELECT * FROM `isu_condition` WHERE `jia_isu_uuid` = ? ORDER BY timestamp DESC');
-                    $stmt->execute([$isu->jiaIsuUuid]);
-                    $rows = $stmt->fetchAll();
-                } catch (PDOException $e) {
-                    $this->logger->error('db error: ' . $e->errorInfo[2]);
-
-                    return $response->withStatus(StatusCodeInterface::STATUS_INTERNAL_SERVER_ERROR);
-                }
-
-                /** @var array<IsuCondition> $conditions */
-                $conditions = [];
-                foreach ($rows as $row) {
-                    $conditions[] = IsuCondition::fromDbRow($row);
-                }
-
+                $conditions = $conditionsMap[$isu->jiaIsuUuid] ?? [];
                 if (count($conditions) > 0) {
                     $isuLastCondition = $conditions[0];
                     try {
